@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>4Roots Creative | Proprietary AI & Design Engineering</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-deep: #000205;
+            --accent-orange: #ff5f1f;
+            --accent-blue: #00f0ff;
+            --accent-purple: #9d4edd;
+            --text-main: #f5f5f7;
+            --text-dim: #86868b;
+            --glass: rgba(255, 255, 255, 0.02);
+            --border: rgba(255, 255, 255, 0.08);
+            --font-head: 'Space Grotesk', sans-serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4, .logo { font-family: var(--font-head); }
+
+        /* --- 3D CANVAS --- */
+        #canvas-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #000814 0%, #000205 100%);
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            background: rgba(0,0,0,0.4);
+        }
+        .logo { font-size: 1.3rem; font-weight: 800; letter-spacing: -1px; }
+        .logo span { color: var(--accent-orange); }
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-links a { 
+            text-decoration: none; color: var(--text-dim); 
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        .nav-links a:hover { color: #fff; }
+        .btn-core {
+            background: linear-gradient(45deg, var(--accent-orange), var(--accent-purple));
+            color: #fff !important;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 700;
+            box-shadow: 0 0 20px rgba(255, 95, 31, 0.3);
+        }
+
+        /* --- SECTIONS --- */
+        section { padding: 80px 5%; position: relative; }
+        
+        .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 0 5%; }
+        .hero h1 { font-size: clamp(2.2rem, 7vw, 6rem); line-height: 1.05; margin-bottom: 25px; letter-spacing: -2px; word-break: break-word; }
+        .gradient-text {
+            background: linear-gradient(to right, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brain-section {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 40px;
+            align-items: center;
+            background: rgba(255,255,255,0.01);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 40px;
+            position: relative;
+        }
+        .brain-visual { height: 350px; width: 100%; display: flex; justify-content: center; align-items: center; }
+        .tech-badge { color: var(--accent-orange); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; margin-bottom: 20px; display: block; }
+
+        .systems-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 40px; }
+        .sys-box { padding: 30px; border-left: 2px solid var(--accent-purple); background: linear-gradient(90deg, rgba(157, 78, 221, 0.05), transparent); }
+
+        .eco-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 40px; }
+        .eco-card { background: var(--glass); border: 1px solid var(--border); padding: 30px 20px; border-radius: 16px; text-align: center; transition: 0.5s; }
+        .eco-card:hover { border-color: var(--accent-blue); transform: translateY(-5px); }
+        .eco-card i { font-size: 1.8rem; margin-bottom: 15px; color: var(--accent-blue); display: block;}
+
+        .btn { padding: 16px 32px; border-radius: 2px; text-decoration: none; font-weight: 700; display: inline-block; font-family: var(--font-head); text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; }
+        .btn-primary { background: #fff; color: #000; border: none;}
+
+        @media (max-width: 900px) {
+            .nav-links { display: none; } /* Standard solution for simple mobile layouts */
+            .brain-section { grid-template-columns: 1fr; padding: 30px 20px; }
+            .brain-visual { height: 300px; }
+            section { padding: 60px 5%; }
+            .hero h1 { margin-top: 60px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <nav>
+        <div class="logo">4ROOTS<span>CREATIVE</span></div>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#systems">Systems</a>
+            <a href="#capabilities">Ecosystem</a>
+            <a href="#core" class="btn-core">Proprietary Brain</a>
+        </div>
+    </nav>
+
+    <main>
+        <section id="home" class="hero">
+            <span class="tech-badge" style="color: var(--accent-blue);">Augmenting Reality // 2026</span>
+            <h1 class="gradient-text">Architecting<br>Neural Interfaces.</h1>
+            <p style="max-width: 550px; color: var(--text-dim); font-size: 1.1rem; margin-bottom: 40px;">
+                We fuse Vibe Coding with high-fidelity Design Engineering to build the future of autonomous brand ecosystems.
+            </p>
+            <div><a href="#contact" class="btn btn-primary">Initiate Project</a></div>
+        </section>
+
+        <section id="core">
+            <div class="brain-section">
+                <div>
+                    <span class="tech-badge">Operational Engine</span>
+                    <h2 style="font-size: clamp(2.5rem, 5vw, 4rem); margin: 10px 0; line-height: 1.1;">The 4Roots<br><span style="color: var(--accent-orange);">Brain AI</span></h2>
+                    <p style="color: var(--text-dim); margin: 20px 0; font-size: 1.05rem; line-height: 1.6;">
+                        Our proprietary technology is a specialized neural weights engine that synchronizes branding pipelines, hardware inference, and vibe-coding environments. This is the catalyst for our exponential growth.
+                    </p>
+                    <ul style="list-style: none; color: #fff; font-weight: 600; font-family: var(--font-head); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">
+                        <li style="margin-bottom: 14px;"><i class="fa-solid fa-bolt" style="color:var(--accent-orange); margin-right: 12px;"></i> 10x Production Velocity</li>
+                        <li style="margin-bottom: 14px;"><i class="fa-solid fa-shield-halved" style="color:var(--accent-orange); margin-right: 12px;"></i> Proprietary Data Security</li>
+                        <li style="margin-bottom: 14px;"><i class="fa-solid fa-microchip" style="color:var(--accent-orange); margin-right: 12px;"></i> Custom Hardware Integration</li>
+                    </ul>
+                </div>
+                <div class="brain-visual" id="brain-mount"></div>
+            </div>
+        </section>
+
+        <section id="systems">
+            <h2 style="font-size: 2.5rem; margin-bottom: 30px;">Systems & Protocols</h2>
+            <div class="systems-grid">
+                <div class="sys-box"><h3>Local LLMs</h3><p style="color: var(--text-dim); margin-top: 10px;">Air-gapped intelligence using dedicated Ollama clusters.</p></div>
+                <div class="sys-box" style="border-color: var(--accent-blue);"><h3>Hardware Dev</h3><p style="color: var(--text-dim); margin-top: 10px;">GPU-clusters optimized for cinematic generative production.</p></div>
+                <div class="sys-box" style="border-color: var(--accent-orange);"><h3>Neural Training</h3><p style="color: var(--text-dim); margin-top: 10px;">Fine-tuning open-weight models on proprietary brand voice.</p></div>
+            </div>
+        </section>
+
+        <section id="capabilities">
+            <div style="text-align: center; margin-bottom: 40px;"><h2 style="font-size: 2.5rem;">Service Ecosystem</h2></div>
+            <div class="eco-grid">
+                <div class="eco-card"><i class="fa-solid fa-brain"></i><h4>Cognitive UI</h4><p style="color: var(--text-dim); font-size:0.9rem; margin-top:5px;">Adaptive interfaces.</p></div>
+                <div class="eco-card"><i class="fa-solid fa-robot"></i><h4>Autonomous Agents</h4><p style="color: var(--text-dim); font-size:0.9rem; margin-top:5px;">Executing workflows.</p></div>
+                <div class="eco-card"><i class="fa-solid fa-video"></i><h4>AI Storytelling</h4><p style="color: var(--text-dim); font-size:0.9rem; margin-top:5px;">Cinematic production.</p></div>
+                <div class="eco-card"><i class="fa-solid fa-terminal"></i><h4>Vibe Coding</h4><p style="color: var(--text-dim); font-size:0.9rem; margin-top:5px;">Rapid deployment.</p></div>
+            </div>
+        </section>
+
+        <section id="contact" style="text-align: center; padding-bottom: 100px;">
+            <div style="max-width: 800px; margin: 0 auto; background: var(--glass); border: 1px solid var(--border); padding: 40px 20px; border-radius: 24px;">
+                <h2 style="font-size: 2.5rem; margin-bottom: 30px;">Initiate Shift</h2>
+                <form onsubmit="event.preventDefault(); alert('Transmission Received.');">
+                    <input type="text" placeholder="Name" required style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 15px; color: #fff; margin-bottom: 15px; outline: none;">
+                    <input type="email" placeholder="Email" required style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 15px; color: #fff; margin-bottom: 15px; outline: none;">
+                    <button class="btn btn-primary" style="width: 100%; cursor: pointer;">Send Transmission</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        // Check if device is mobile to optimize variables dynamically
+        const isMobile = window.innerWidth <= 768;
+
+        const brainVS = `
+            varying vec2 vUv;
+            varying float vNoise;
+            uniform float uTime;
+
+            vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
+            vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+            float snoise(vec3 v) {
+                const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+                const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+                vec3 i = floor(v + dot(v, C.yyy));
+                vec3 x0 = v - i + dot(i, C.xxx);
+                vec3 g = step(x0.yzx, x0.xyz);
+                vec3 l = 1.0 - g;
+                vec3 i1 = min(g.xyz, l.zxy);
+                vec3 i2 = max(g.xyz, l.zxy);
+                vec3 x1 = x0 - i1 + C.xxx;
+                vec3 x2 = x0 - i2 + C.yyy;
+                vec3 x3 = x0 - D.yyy;
+                i = mod289(i);
+                vec4 p = permute(permute(permute(i.z + vec4(0.0, i1.z, i2.z, 1.0)) + i.y + vec4(0.0, i1.y, i2.y, 1.0)) + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+                vec4 j = p - 49.0 * floor(p * (1.0/49.0));
+                vec4 x_ = floor(j * (1.0/7.0));
+                vec4 y_ = floor(j - 7.0 * x_);
+                vec4 x = x_ * (1.0/7.0) + 0.07; vec4 y = y_ * (1.0/7.0) + 0.07;
+                vec4 h = 1.0 - abs(x) - abs(y);
+                vec4 b0 = vec4(x.xy, y.xy); vec4 b1 = vec4(x.zw, y.zw);
+                vec4 s0 = floor(b0)*2.0 + 1.0; vec4 s1 = floor(b1)*2.0 + 1.0;
+                vec4 sh = -step(h, vec4(0.0));
+                vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+                vec3 p0 = vec3(a0.xy, h.x); vec3 p1 = vec3(a0.zw, h.y); vec3 p2 = vec3(a1.xy, h.z); vec3 p3 = vec3(a1.zw, h.w);
+                vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+                p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+                vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+                m = m * m; return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+            }
+
+            void main() {
+                vUv = uv;
+                vNoise = snoise(position * 1.5 + uTime * 0.1);
+                float displacement = vNoise * 0.25;
+                vec3 newPos = position + normal * displacement;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(newPos, 1.0);
+            }
+        `;
+
+        const brainFS = `
+            varying float vNoise;
+            uniform vec3 uColor;
+            uniform float uOpacity;
+            void main() {
+                vec3 finalColor = mix(uColor, vec3(1.0, 1.0, 1.0), vNoise * 0.4);
+                gl_FragColor = vec4(finalColor, uOpacity + vNoise * 0.3);
+            }
+        `;
+
+        const canvasContainer = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: !isMobile, alpha: true }); // Performance bump on mobile
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        canvasContainer.appendChild(renderer.domElement);
+
+        // 1. Subtle Perspective Grid
+        const gridHelper = new THREE.GridHelper(120, 50, 0x00f0ff, 0x000814);
+        gridHelper.position.y = -8;
+        gridHelper.material.opacity = 0.15;
+        gridHelper.material.transparent = true;
+        scene.add(gridHelper);
+
+        // 2. Soft Background Dust
+        const starGeo = new THREE.BufferGeometry();
+        const starCount = isMobile ? 1000 : 3000; // Fewer particles on phone
+        const starPos = new Float32Array(starCount * 3);
+        for(let i=0; i<starCount * 3; i++) starPos[i] = (Math.random() - 0.5) * 60;
+        starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+        const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ size: 0.015, color: 0x88ccff, transparent: true, opacity: 0.3 }));
+        scene.add(stars);
+
+        // 3. Hero Sphere - REDUCED DETAILS (16 segments instead of 64 on mobile)
+        const heroSegments = isMobile ? 16 : 48;
+        const heroCore = new THREE.Mesh(
+            new THREE.IcosahedronGeometry(3.5, heroSegments),
+            new THREE.ShaderMaterial({
+                vertexShader: brainVS, fragmentShader: brainFS,
+                uniforms: { uTime: { value: 0 }, uColor: { value: new THREE.Color(0x00f0ff) }, uOpacity: { value: 0.15 } },
+                wireframe: true, transparent: true, blending: THREE.AdditiveBlending
+            })
+        );
+        scene.add(heroCore);
+
+        // 4. Tech Section Brain
+        const brainGroup = new THREE.Group();
+        const lobeGeo = new THREE.IcosahedronGeometry(1, isMobile ? 12 : 32);
+        const brainMat1 = new THREE.ShaderMaterial({
+            vertexShader: brainVS, fragmentShader: brainFS,
+            uniforms: { uTime: { value: 0 }, uColor: { value: new THREE.Color(0xff5f1f) }, uOpacity: { value: 0.3 } },
+            transparent: true, wireframe: true, blending: THREE.AdditiveBlending
+        });
+        const brainMat2 = brainMat1.clone();
+        brainMat2.uniforms.uColor.value = new THREE.Color(0x9d4edd);
+
+        const leftLobe = new THREE.Mesh(lobeGeo, brainMat1);
+        leftLobe.scale.set(1.2, 1.5, 1.8); leftLobe.position.x = -0.65;
+        const rightLobe = new THREE.Mesh(lobeGeo, brainMat2);
+        rightLobe.scale.set(1.2, 1.5, 1.8); rightLobe.position.x = 0.65;
+
+        brainGroup.add(leftLobe); brainGroup.add(rightLobe);
+        
+        // Mobile layout adjust for secondary 3D item
+        if(isMobile) {
+            brainGroup.position.set(0, -10, -2);
+        } else {
+            brainGroup.position.set(15, -12, -5);
+        }
+        scene.add(brainGroup);
+
+        camera.position.z = isMobile ? 14 : 12; // Push camera back a tiny bit on tall screens
+
+        let mouseX = 0, mouseY = 0;
+        
+        // Unified Desktop Mouse + Mobile Touch Parallax listener
+        function handleMove(clientX, clientY) {
+            mouseX = (clientX / window.innerWidth - 0.5);
+            mouseY = (clientY / window.innerHeight - 0.5);
+        }
+        window.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
+        window.addEventListener('touchmove', (e) => {
+            if(e.touches.length > 0) handleMove(e.touches[0].clientX, e.touches[0].clientY);
+        }, {passive: true});
+
+        const clock = new THREE.Clock();
+        function animate() {
+            const t = clock.getElapsedTime();
+            
+            heroCore.rotation.y = t * 0.08;
+            heroCore.material.uniforms.uTime.value = t;
+
+            brainGroup.rotation.y = t * 0.15;
+            leftLobe.material.uniforms.uTime.value = t;
+            rightLobe.material.uniforms.uTime.value = t;
+
+            stars.rotation.y = t * 0.01;
+            gridHelper.position.z = (t * 1.5) % 2.4; 
+
+            const scroll = window.scrollY;
+            if(scroll > 400) {
+                if(isMobile) {
+                    camera.position.x += (0 - camera.position.x) * 0.05;
+                    camera.position.y += (-10 - camera.position.y) * 0.05;
+                    camera.lookAt(new THREE.Vector3(0, -10, -2));
+                } else {
+                    camera.position.x += (11 - camera.position.x) * 0.05;
+                    camera.position.y += (-12 - camera.position.y) * 0.05;
+                    camera.lookAt(new THREE.Vector3(15, -12, -5));
+                }
+            } else {
+                camera.position.x += (mouseX * 3 - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY * 3 - camera.position.y) * 0.05;
+                camera.lookAt(0, 0, 0);
+            }
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>
